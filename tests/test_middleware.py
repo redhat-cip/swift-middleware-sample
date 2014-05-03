@@ -16,7 +16,7 @@ class TestSummitMiddleware(unittest.TestCase):
     def test_simple_request(self):
         environ={'REQUEST_METHOD': 'PUT'}
         req = Request.blank('/echo', environ, body='Hello World')
-        mw = SummitMiddleware(FakeApp())
+        mw = SummitMiddleware(FakeApp(), suffix='/echo')
         response = req.get_response(mw)
         self.assertEqual("Hello World", response.body)
 
