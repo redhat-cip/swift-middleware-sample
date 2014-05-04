@@ -1,7 +1,7 @@
 import StringIO
 import unittest
 
-from webob import Request
+from swift.common.swob import Request
 
 from sample.middleware import SummitMiddleware
 
@@ -13,12 +13,11 @@ class FakeApp(object):
 
 
 class TestSummitMiddleware(unittest.TestCase):
-    def test_simple_request(self):
-        environ={'REQUEST_METHOD': 'PUT'}
-        req = Request.blank('/echo', environ, body='Hello World')
-        mw = SummitMiddleware(FakeApp(), suffix='/echo')
-        response = req.get_response(mw)
-        self.assertEqual("Hello World", response.body)
+    def test_get_preview(self):
+        req = Request.blank('/v1/a/c/o?preview')
+        mw = SummitMiddleware(FakeApp(), suffix='preview')
+        res = req.get_response(mw)
+        self.assertEqual(res.environ['PATH_INFO'], '/v1/a/c_preview/o')
 
 
 if __name__ == '__main__':
