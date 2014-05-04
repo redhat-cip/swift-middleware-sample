@@ -41,6 +41,10 @@ class SummitMiddleware(object):
                 sub = wsgi.make_subrequest(request.environ, path=preview_path, body=preview)
                 sub.get_response(self.app)
 
+        if request.method == 'DELETE':
+            sub = wsgi.make_subrequest(request.environ, path=preview_path)
+            sub.get_response(self.app)
+
         return self.app
 
 def filter_factory(global_config, **local_config):
