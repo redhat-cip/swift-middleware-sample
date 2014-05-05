@@ -11,5 +11,5 @@ def myapp(environ, start_response):
     start_response('200 OK', headers)
     return body
 
-srv = make_server('localhost', 8000, SummitMiddleware(myapp))
-srv.serve_forever()
+def app_factory(global_config, **local_config):
+    return myapp

@@ -8,3 +8,8 @@ class SummitMiddleware(object):
             length = int(env.get('CONTENT_LENGTH') or 0)
             return env.get('wsgi.input').read(length)
         return response
+
+def filter_factory(global_config, **local_config):
+    def factory(app):
+        return SummitMiddleware(app)
+    return factory
