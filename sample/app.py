@@ -1,4 +1,5 @@
 from wsgiref.simple_server import make_server
+from sample.middleware import SummitMiddleware
 
 def myapp(environ, start_response):
     body = []
@@ -10,5 +11,5 @@ def myapp(environ, start_response):
     start_response('200 OK', headers)
     return body
 
-srv = make_server('localhost', 8000, myapp)
+srv = make_server('localhost', 8000, SummitMiddleware(myapp))
 srv.serve_forever()
