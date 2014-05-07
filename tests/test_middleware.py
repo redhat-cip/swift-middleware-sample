@@ -1,6 +1,7 @@
 import StringIO
 import unittest
 
+import mock
 from swift.common.swob import Request
 
 from sample.middleware import SummitMiddleware
@@ -18,6 +19,16 @@ class TestSummitMiddleware(unittest.TestCase):
         mw = SummitMiddleware(FakeApp(), suffix='preview')
         res = req.get_response(mw)
         self.assertEqual(res.environ['PATH_INFO'], '/v1/a/c_preview/o')
+
+    @mock.patch('sample.middleware.create_preview')
+    @mock.patch('swift.common.wsgi.make_subrequest')
+    def test_extract_preview(self, request_mock, create_preview_mock):
+        create_preview_mock.return_value = 'dummy'
+        environ = {'REQUEST_METHOD': 'PUT'}
+        req = Request.blank('/v1/a/c/o', environ)
+        mw = SummitMiddleware(FakeApp(), suffix='preview')
+        res = req.get_response(mw)
+        request_mock.assert_called_with(req.environ, body='dummy', path='/v1/a/c_preview/o')
 
 
 if __name__ == '__main__':

@@ -1,6 +1,21 @@
+import StringIO
+
 from swift.common import wsgi
 from swift.common.swob import wsgify
 from swift.common.utils import split_path
+
+import Image
+
+
+def create_preview(data):
+    size = 150, 150
+    image_obj = StringIO.StringIO(data)
+    preview_obj = StringIO.StringIO()
+    im = Image.open(image_obj)
+    im.thumbnail(size, Image.ANTIALIAS)
+    im.save(preview_obj, "JPEG")
+    preview_obj.seek(0)
+    return preview_obj.read()
 
 
 class SummitMiddleware(object):
@@ -20,6 +35,12 @@ class SummitMiddleware(object):
         if request.method == 'GET' and request.params.has_key('preview'):
             request.path_info = preview_path
        
+        if request.method == 'PUT':
+            preview = create_preview(request.body)
+            if preview:
+                sub = wsgi.make_subrequest(request.environ, path=preview_path, body=preview)
+                sub.get_response(self.app)
+
         return self.app
 
 def filter_factory(global_config, **local_config):
