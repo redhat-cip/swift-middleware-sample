@@ -36,7 +36,17 @@ class SummitMiddleware(object):
             request.path_info = preview_path
        
         if request.method == 'PUT':
-            preview = create_preview(request.body)
+            if hasattr(request, 'body_file'):
+                data = ""
+                while True:
+                    chunk = request.body_file.read()
+                    if not chunk:
+                        break
+                    data += chunk
+                request.body = data
+                preview = create_preview(data)
+            else:
+                preview = create_preview(request.body)
             if preview:
                 sub = wsgi.make_subrequest(request.environ, path=preview_path, body=preview)
                 sub.get_response(self.app)
