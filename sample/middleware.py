@@ -4,7 +4,7 @@ from swift.common import wsgi
 from swift.common.swob import wsgify
 from swift.common.utils import split_path
 
-import Image
+from PIL import Image
 
 
 def create_preview(data):
